@@ -51,6 +51,16 @@
   </nav>
 
   <div class="container mt-4">
+     <!-- Hiển thị thông báo nếu có -->
+     <?php if (isset($_SESSION['success_message'])): ?>
+          <div class="alert alert-success" id="success-message">
+              <?php 
+              echo $_SESSION['success_message']; 
+              unset($_SESSION['success_message']); // Xóa thông báo sau khi hiển thị
+              ?>
+          </div>
+      <?php endif; ?>
+
       <!-- Nội dung trang -->
   </div>
 
@@ -58,5 +68,13 @@
   <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.5.2/umd/popper.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script>
+      // Tự động tắt thông báo sau 3 giây
+      $(document).ready(function() {
+          setTimeout(function() {
+              $("#success-message").alert('close');
+          }, 2000);
+      });y
+  </script>
 </body>
 </html>

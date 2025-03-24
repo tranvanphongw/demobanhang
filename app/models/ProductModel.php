@@ -11,8 +11,9 @@ class ProductModel
 
     public function getProducts()
     {
-        $query = "SELECT p.id, p.name, p.description, p.price, p.image, c.name as category_name 
-                  FROM " . $this->table_name . " p 
+        // Thêm trường image vào truy vấn SELECT
+        $query = "SELECT p.id, p.name, p.description, p.price, p.image, c.name as category_name
+                  FROM " . $this->table_name . " p
                   LEFT JOIN category c ON p.category_id = c.id";
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
@@ -22,6 +23,7 @@ class ProductModel
 
     public function getProductById($id)
     {
+        // Giữ nguyên, vì SELECT * đã bao gồm trường image
         $query = "SELECT * FROM " . $this->table_name . " WHERE id = :id";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':id', $id);
@@ -43,15 +45,16 @@ class ProductModel
         if (!is_numeric($price) || $price < 0) {
             $errors['price'] = 'Giá sản phẩm không hợp lệ';
         }
+        // Bạn có thể thêm kiểm tra đối với $image nếu cần
+
         if (count($errors) > 0) {
             return $errors;
         }
 
-        $query = "INSERT INTO " . $this->table_name . " (name, description, price, category_id, image) 
+        $query = "INSERT INTO " . $this->table_name . " (name, description, price, category_id, image)
                   VALUES (:name, :description, :price, :category_id, :image)";
         $stmt = $this->conn->prepare($query);
 
-        // Lọc dữ liệu đầu vào để tránh XSS và SQL Injection
         $name = htmlspecialchars(strip_tags($name));
         $description = htmlspecialchars(strip_tags($description));
         $price = htmlspecialchars(strip_tags($price));
@@ -77,7 +80,6 @@ class ProductModel
                   WHERE id = :id";
         $stmt = $this->conn->prepare($query);
 
-        // Lọc dữ liệu đầu vào
         $name = htmlspecialchars(strip_tags($name));
         $description = htmlspecialchars(strip_tags($description));
         $price = htmlspecialchars(strip_tags($price));

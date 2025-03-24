@@ -77,7 +77,8 @@ class AccountController {
                     session_start();
                     // $_SESSION['user_id'] = $account->id;
                     // $_SESSION['user_role'] = $account->role;
-                    $_SESSION['username'] = $account->username;
+                    $_SESSION['username'] = $account->username; 
+                    $_SESSION['success_message'] = "Đăng nhập thành công!";                               
                     header('Location: /DemoBanHang/product');
                     exit;
                 } else {

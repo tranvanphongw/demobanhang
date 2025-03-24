@@ -72,6 +72,7 @@ class ProductController
         $categories = (new CategoryModel($this->db))->getCategories();
 
         if ($product) {
+            $editId = $id;
             include 'app/views/product/edit.php';
         } else {
             echo "Không thấy sản phẩm.";

@@ -1,139 +1,108 @@
 <?php include 'app/views/shares/header.php'; ?>
-
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <!-- Bắt đầu thẻ Card -->
-            <div class="card shadow">
-                <!-- Tiêu đề Card -->
-                <div class="card-header bg-primary text-white">
-                    <h4 class="mb-0">Sửa sản phẩm</h4>
-                </div>
-
-                <!-- Nội dung Card -->
-                <div class="card-body">
-                    <?php
-                    // Kiểm tra an toàn đối với biến $product
-                    if (!isset($product) || !is_object($product)) {
-                        echo "<div class='alert alert-danger'><strong>Sản phẩm không tồn tại hoặc dữ liệu bị lỗi.</strong></div>";
-                        include 'app/views/shares/footer.php';
-                        exit;
-                    }
-                    ?>
-
-                    <!-- Hiển thị lỗi (nếu có) -->
-                    <?php if (!empty($errors)): ?>
-                        <div class="alert alert-danger">
-                            <ul class="mb-0">
-                                <?php foreach ($errors as $error): ?>
-                                    <li><?php echo htmlspecialchars($error, ENT_QUOTES, 'UTF-8'); ?></li>
-                                <?php endforeach; ?>
-                            </ul>
-                        </div>
-                    <?php endif; ?>
-
-                    <!-- Form Sửa sản phẩm -->
-                    <form 
-                        method="POST" 
-                        action="/DemoBanHang/Product/update" 
-                        enctype="multipart/form-data" 
-                        onsubmit="return validateForm();"
-                    >
-                        <input type="hidden" name="id" value="<?php echo $product->id; ?>">
-
-                        <div class="form-group mb-3">
-                            <label for="name" class="font-weight-bold">Tên sản phẩm:</label>
-                            <input 
-                                type="text" 
-                                id="name" 
-                                name="name" 
-                                class="form-control"
-                                value="<?php echo htmlspecialchars($product->name, ENT_QUOTES, 'UTF-8'); ?>" 
-                                required
-                            >
-                        </div>
-
-                        <div class="form-group mb-3">
-                            <label for="description" class="font-weight-bold">Mô tả:</label>
-                            <textarea 
-                                id="description" 
-                                name="description" 
-                                class="form-control" 
-                                rows="3" 
-                                required
-                            ><?php echo htmlspecialchars($product->description, ENT_QUOTES, 'UTF-8'); ?></textarea>
-                        </div>
-
-                        <div class="form-group mb-3">
-                            <label for="price" class="font-weight-bold">Giá:</label>
-                            <input 
-                                type="number" 
-                                id="price" 
-                                name="price" 
-                                class="form-control" 
-                                step="0.01"
-                                value="<?php echo htmlspecialchars($product->price, ENT_QUOTES, 'UTF-8'); ?>" 
-                                required
-                            >
-                        </div>
-
-                        <div class="form-group mb-3">
-                            <label for="category_id" class="font-weight-bold">Danh mục:</label>
-                            <select 
-                                id="category_id" 
-                                name="category_id" 
-                                class="form-control" 
-                                required
-                            >
-                                <?php foreach ($categories as $category): ?>
-                                    <option 
-                                        value="<?php echo $category->id; ?>" 
-                                        <?php echo $category->id == $product->category_id ? 'selected' : ''; ?>
-                                    >
-                                        <?php echo htmlspecialchars($category->name, ENT_QUOTES, 'UTF-8'); ?>
-                                    </option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
-
-                        <div class="form-group mb-3">
-                            <label for="image" class="font-weight-bold">Hình ảnh:</label>
-                            <input 
-                                type="file" 
-                                id="image" 
-                                name="image" 
-                                class="form-control"
-                            >
-                            <!-- Giữ lại đường dẫn ảnh cũ (nếu có) -->
-                            <input type="hidden" name="existing_image" value="<?php echo $product->image; ?>">
-
-                            <?php if ($product->image): ?>
-                                <img 
-                                    src="/<?php echo $product->image; ?>" 
-                                    alt="Product Image" 
-                                    class="img-fluid mt-3" 
-                                    style="max-width: 100%; height: auto;"
-                                >
-                            <?php endif; ?>
-                        </div>
-
-                        <!-- Nút Lưu thay đổi và Quay lại -->
-                        <div class="d-flex justify-content-between">
-                            <button type="submit" class="btn btn-primary">
-                                <strong>Lưu thay đổi</strong>
-                            </button>
-                            <a href="/DemoBanHang/Product" class="btn btn-secondary">
-                                <strong>Quay lại danh sách sản phẩm</strong>
-                            </a>
-                        </div>
-                    </form>
-                    <!-- Kết thúc form -->
-                </div>
-                <!-- Kết thúc nội dung Card -->
-            </div>
-            <!-- Kết thúc thẻ Card -->
-        </div>
+<h1>Sửa sản phẩm</h1>
+<form id="edit-product-form">
+    <input type="hidden" id="id" name="id">
+    <div class="form-group">
+        <label for="name">Tên sản phẩm:</label>
+        <input type="text" id="name" name="name" class="form-control" required>
     </div>
-</div>
-
+    <div class="form-group">
+        <label for="description">Mô tả:</label>
+        <textarea id="description" name="description" class="form-control" required></textarea>
+    </div>
+    <div class="form-group">
+        <label for="price">Giá:</label>
+        <input type="number" id="price" name="price" class="form-control" step="0.01" required>
+    </div>
+    <div class="form-group">
+        <label for="category_id">Danh mục:</label>
+        <select id="category_id" name="category_id" class="form-control" required>
+            <!-- Các danh mục sẽ được tải từ API và hiển thị tại đây -->
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="image">Ảnh sản phẩm:</label>
+        <input type="file" id="image" name="image" class="form-control">
+    </div>
+    <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+</form>
+<a href="/DemoBanHang/Product/list" class="btn btn-secondary mt-2">Quay lại danh sách sản phẩm</a>
 <?php include 'app/views/shares/footer.php'; ?>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const productId = <?= $editId ?>;
+    
+    // Lấy thông tin sản phẩm theo ID
+    fetch(`/DemoBanHang/api/product/${productId}`)
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('id').value = data.id;
+            document.getElementById('name').value = data.name;
+            document.getElementById('description').value = data.description;
+            document.getElementById('price').value = data.price;
+            // Gán giá trị cho danh mục nếu có
+            document.getElementById('category_id').value = data.category_id;
+        });
+
+    // Lấy danh sách danh mục từ API
+    fetch('/DemoBanHang/api/category')
+        .then(response => response.json())
+        .then(data => {
+            const categorySelect = document.getElementById('category_id');
+            data.forEach(category => {
+                const option = document.createElement('option');
+                option.value = category.id;
+                option.textContent = category.name;
+                categorySelect.appendChild(option);
+            });
+        });
+
+    // Xử lý submit form chỉnh sửa sản phẩm
+    document.getElementById('edit-product-form').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const form = this;
+        const formData = new FormData(form);
+        const jsonData = {};
+
+        // Chuyển đổi dữ liệu từ form sang JSON (bỏ qua trường file)
+        formData.forEach((value, key) => {
+            if (key !== 'image') {
+                jsonData[key] = value;
+            }
+        });
+
+        const imageInput = document.getElementById('image');
+        if (imageInput.files && imageInput.files[0]) {
+            const reader = new FileReader();
+            reader.onloadend = function() {
+                jsonData.image = reader.result; // Chuỗi base64 của ảnh
+                sendUpdate(jsonData);
+            }
+            reader.readAsDataURL(imageInput.files[0]);
+        } else {
+            // Nếu không chọn ảnh mới, giữ nguyên giá trị hiện tại (hoặc gán rỗng nếu muốn cập nhật là không có ảnh)
+            jsonData.image = '';
+            sendUpdate(jsonData);
+        }
+    });
+
+    function sendUpdate(jsonData) {
+        fetch(`/DemoBanHang/api/product/${jsonData.id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(jsonData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message === 'Product updated successfully') {
+                location.href = '/DemoBanHang/Product';
+            } else {
+                alert('Cập nhật sản phẩm thất bại');
+            }
+        });
+    }
+});
+</script>
